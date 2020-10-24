@@ -1,0 +1,3 @@
+/home/xkey/alogrytmy/practises/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/xkey/alogrytmy/practises/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/xkey/alogrytmy/practises/cmake-build-debug/CMakeFiles/practises.dir
