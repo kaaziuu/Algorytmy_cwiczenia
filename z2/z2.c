@@ -9,14 +9,6 @@ typedef struct elem
 
 // typedef struct elem el;
 
-el *create(int x)
-{
-    el *head = (el *)malloc(sizeof(el));
-    head->x = x;
-    head->next = NULL;
-    return head;
-}
-
 void deleteEl(el *head)
 {
 
@@ -36,7 +28,7 @@ void pritnEl(el *head)
     if (head != NULL)
     {
         printf("___________\n");
-        
+
         el *printer = head;
         while (printer != NULL)
         {
@@ -44,117 +36,113 @@ void pritnEl(el *head)
             printer = printer->next;
         }
         printf("___________\n");
-    }else{
+    }
+    else
+    {
         printf("lista jest pusta");
     }
 }
 
-el *getLast(el *head)
+el *create(int x)
 {
-    if (head != NULL)
-    {
-        el *tmp = head;
-        while (tmp->next != NULL)
-        {
-            tmp = tmp->next;
-        }
-
-        return tmp;
-    }
-    return NULL;
-}
-
-el *addTop(el *head, int y)
-{
-    el *newhead = (el *)malloc(sizeof(el));
-    newhead->x = y;
-    if (head != NULL)
-    {
-        newhead->next = head;
-    }
-    else
-    {
-        newhead->next = NULL;
-    }
-    return newhead;
-}
-
-el *addBottom(el *head, int y)
-{
-    if (head != NULL)
-    {
-        el *bottom = (el *)malloc(sizeof(el));
-        bottom->x = y;
-        bottom->next = NULL;
-
-        el *last = getLast(head);
-        last->next = bottom;
-    }
-    else
-    {
-        head = create(y);
-    }
+    el *head = (el *)malloc(sizeof(el));
+    head->x = x;
+    head->next = NULL;
     return head;
 }
 
-el *find(el *head, int x)
+void addTop(el **head, int y)
 {
-    if (head != NULL)
+    if (*head != NULL)
     {
-        el *help = head;
-        int i = 0;
-        while (help->x != x && help->next != NULL)
+        el *help = *head;
+        el *copy = (el *)malloc(sizeof(el));
+        copy->x = help->x;
+        copy->next = help->next;
+        help->next = copy;
+        help->x = y;
+        *head = help;
+    }
+    else
+    {
+        *head = create(y);
+    }
+}
+
+void addBottom(el **head, int y)
+{
+    if (*head != NULL)
+    {
+        el *help = *head;
+        while (help->next != NULL)
         {
             help = help->next;
-            i++;
         }
-        if (help->x == x)
+        el *newElem = (el *)malloc(sizeof(el));
+        newElem->x = y;
+        newElem->next = NULL;
+        help->next = newElem;
+    }
+    else
+    {
+        *head = create(y);
+    }
+}
+
+void find(el **head, int y)
+{
+    if (*head != NULL)
+    {
+        el *help = *head;
+        int index = 0;
+        while (help != NULL)
         {
-            printf("%d znaleziono na %d pozycji\n", x, i);
-            return help;
-        }
-        else
-        {
-            printf("%d nie znaleziono\n", x);
-            return head;
+            
+            if (help->x == y)
+            {
+                printf("%d znaleziono na pozycji %d\n", y, index);
+            }
+            help = help->next;
+            index++;
         }
     }
     else
     {
         printf("lista jest pusta\n");
-        return NULL;
     }
 }
 
-el * addAfter(el *head, int index, int y)
+void addAfter(el **head, int index, int y)
 {
-    if(head == NULL){
-        return create(y);
-    }
-
-    int i = 0;
-    el *help = head;
-    while (help != NULL)
+    if (index == 0 && head == NULL)
     {
-        if (i == index)
-        {
-            el *newEl = (el *)malloc(sizeof(el));
-            newEl->x = y;
-            newEl->next = help->next;
-            help->next = newEl;
-            break;
-        }
-        help = help->next;
-        i++;
+        addTop(head, y);
     }
-    return head;
+    else if (head != NULL)
+    {
+        el *help = *head;
+        int i = 0;
+        while (help != NULL)
+        {
+            if (i == index)
+            {
+                el *newEl = (el *)malloc(sizeof(el));
+                newEl->x = y;
+                newEl->next = help->next;
+                help->next = newEl;
+                break;
+            }
+            help = help->next;
+            i++;
+        }
+    }
 }
 
-el* addBefore(el *head, int index, int y)
+void addBefore(el **head, int index, int y)
 {
     if (head != NULL)
     {
-        el *help = head;
+        el *help = *head;
         el *before = NULL;
         int i = 0;
         while (help != NULL)
@@ -163,91 +151,16 @@ el* addBefore(el *head, int index, int y)
             {
                 el *newEl = (el *)malloc(sizeof(el));
                 newEl->x = y;
-                if(before != NULL){
+                if (before != NULL)
+                {
                     newEl->next = help;
                     before->next = newEl;
-                    return head;
                 }
-                else{
-                    newEl->next = head;
-                    return newEl;
+                else
+                {
+                    newEl->next = *head;
+                    *head = newEl;
                 }
-            }else{
-                i++;
-                before = help;
-                help = help->next;
-
-            }
-        }
-    }
-    else{
-        head= create(y);
-    }
-    return head;
-}
-
-el *pop(el *head)
-{
-    if (head != NULL)
-    {
-        el *newHead = NULL;
-        if (head->next != NULL)
-        {
-            newHead = head->next;
-        }
-        free(head);
-        return newHead;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-el *drop(el *head)
-{
-    if (head != NULL)
-    {
-        el *help = head;
-        el *before = NULL;
-        while (help->next != NULL)
-        {
-            before = help;
-            help = help->next;
-        }
-        el *returnData = head;
-        if (help == head)
-        {
-            returnData = NULL;
-        }
-        free(help);
-        if (before != NULL)
-        {
-            before->next = NULL;
-        }
-        return returnData;
-    }
-    return NULL;
-}
-
-el * removeEl(el *head, int x)
-{
-    if (head != NULL)
-    {
-        el *help = head;
-        el *before = NULL;
-        if(x==0){
-            help = help->next;
-            free(head);
-            return help;
-        }
-        int i = 0;
-        while (help != NULL)
-        {
-            if (i == x)
-            {
-                before->next = help->next;
-                free(help);
                 break;
             }
             else
@@ -257,14 +170,77 @@ el * removeEl(el *head, int x)
                 help = help->next;
             }
         }
-        return head;
     }
     else
     {
-        return NULL;
+        addTop(head, y);
     }
 }
 
+void pop(el **head)
+{
+    if (head != NULL)
+    {
+        el *tmp = *head;
+        *head = tmp->next;
+        free(tmp);
+    }
+}
+
+void drop(el **head)
+{
+    if (head != NULL)
+    {
+        el *help = *head;
+        el *before = NULL;
+        while (help->next != NULL)
+        {
+            before = help;
+            help = help->next;
+        }
+        if (help == *head)
+        {
+            *head = NULL;
+        }
+        else if (before != NULL)
+        {
+            before->next = NULL;
+        }
+        free(help);
+    }
+}
+
+void removeEl(el **head, int x)
+{
+    if (head != NULL)
+    {
+        el *help = *head;
+        el *before = NULL;
+        int i = 0;
+        if (x == 0)
+        {
+            *head = help->next;
+            free(help);
+        }
+        else
+        {
+            while (help != NULL)
+            {
+                if (i == x)
+                {
+                    before->next = help->next;
+                    free(help);
+                    break;
+                }
+                else{
+                    i++;
+                    before=help;
+                    help = help->next;
+                }
+            }
+        }
+    }
+}
 void printMenu()
 {
     printf("1 wypisz \n");
@@ -281,70 +257,75 @@ void printMenu()
 
 int main(int argc, char const *argv[])
 {
-
     int dec = -1;
     el *head = NULL;
     int help = 0;
     int helpVaule = 0;
+
     while (dec != 0)
     {
         printMenu();
         scanf("%d", &dec);
         switch (dec)
         {
+        case 0:
+            deleteEl(head);
+            break;
         case 1:
             pritnEl(head);
             break;
         case 2:
             printf("podaj liczbe jaka chcesz dodac \n");
             scanf("%d", &help);
-            head = addTop(head, help);
+            addTop(&head, help);
             break;
         case 3:
             printf("podaj liczbe jaka chcesz dodac \n");
             scanf("%d", &help);
-            head = addBottom(head, help);
+            addBottom(&head, help);
             break;
+
         case 4:
             printf("podaj wartos jakiej szukasz \n");
             scanf("%d", &help);
-            head = find(head, help);
+            find(&head, help);
             break;
         case 5:
             printf("podaj jaka chcesz dodac wartosc\n");
             scanf("%d", &help);
             printf("podaj pozyzje elemenut za ktorych chcesz dodac (liczymy od 0) \n");
             scanf("%d", &helpVaule);
-            head = addAfter(head, helpVaule, help);
+            addAfter(&head, helpVaule, help);
             break;
         case 6:
             printf("podaj jaka chcesz dodac wartosc\n");
             scanf("%d", &help);
             printf("podaj pozyzje elemenut przd ktorych  chcesz dodac (liczymy od 0) \n");
             scanf("%d", &helpVaule);
-            head = addBefore(head, helpVaule, help);
+            addBefore(&head, helpVaule, help);
             break;
+
         case 7:
-            head = pop(head);
+            pop(&head);
             break;
         case 8:
-            head=drop(head);
+            drop(&head);
             break;
         case 9:
             printf("podaj index elementu ktory chcesz usunac : ");
             scanf("%d", &help);
-            head = removeEl(head, help);
+            removeEl(&head, help);
             break;
-        case 0:
-            deleteEl(head);
-            break;
-
         default:
-            printf("blednu wybor\n");
             break;
         }
     }
 
-    // deleteEl(head);
     return 0;
 }
+/**
+Podstawą różnica między sposobem z z1 a z2 ze w z1 zawsze trzeba zwracać głowę
+nową bądź starą natomiast w sposobie w z2 operujemy na wskaźniku na wskaznik, przez co jest
+trochę szybsze, lecz w taki sposób łatwiej utracić "głowę" czyli pierwszy element
+oraz według mojej opinii sposób 2 jest bardziej przyjazny, jeśli chodzi o użytkowanie kogoś z zewnątrz.
+ * */
