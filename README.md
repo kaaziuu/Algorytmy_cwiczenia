@@ -4,4 +4,4 @@
 3. zadanie 3 zrobione
 4. zadanie 4 zrobione
 5. zadanie 5 zrobione
-6. zadanie 6 w trakcie(co to wartownik?)
+6. zadanie 6 prawie gotowe(co to wartownik?)
