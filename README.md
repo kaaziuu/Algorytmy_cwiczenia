@@ -5,3 +5,4 @@
 4. zadanie 4 zrobione
 5. zadanie 5 zrobione
 6. zadanie 6 prawie gotowe(co to wartownik?)
+7. zadanie 7 prawie gotowe(co to wartownik?)
