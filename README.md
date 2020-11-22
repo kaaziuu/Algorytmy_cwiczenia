@@ -6,3 +6,4 @@
 5. zadanie 5 zrobione
 6. zadanie 6 prawie gotowe(co to wartownik?)
 7. zadanie 7 prawie gotowe(co to wartownik?)
+8. zadanie 8 zrobione
