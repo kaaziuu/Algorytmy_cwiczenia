@@ -100,92 +100,66 @@ void insert(el **head, int value, int repeat)
     }
 }
 
-el *addBottom(el *head, int y)
+void marge(el **P, el **Q)
 {
-    if (head != NULL)
-    {
-        el *bottom = (el *)malloc(sizeof(el));
-        bottom->x = y;
-        bottom->next = NULL;
 
-        el *last = getLast(head);
-        last->next = bottom;
-    }
-    else
+    if (*P != NULL && *Q != NULL)
     {
-        head = create(y);
-    }
-    return head;
-}
-
-void removeDupicateSorted(el *head)
-{
-    if (head != NULL)
-    {
-        el *current = head;
-        el *firstValue = head;
-        el *tmp = NULL;
-        while (current != NULL)
+        // na current wynieram ta co zaczyna sie od mniejszej
+        el *currentP = *P;
+        el *currentQ = *Q;
+        el *next = NULL;
+        el *first = NULL;
+        el *start = NULL;
+        if (currentQ->x < currentP->x)
         {
-            if (current->x != firstValue->x)
-            {
-                firstValue->next = current;
-                firstValue = current;
-                current = current->next;
-
-            }
-            else{
-                tmp = current;
-                current = current->next;
-                free(tmp);
-            }
+            el *tmp = currentP;
+            currentP = currentQ;
+            currentQ = tmp;
         }
-        if(firstValue->next != NULL){
-            firstValue->next = NULL;
-        }
-    }
-    // return head;
-}
-
-int cotain(el *head, int val)
-{
-    if (head != NULL)
-    {
-        el *current = head;
-        while (current != NULL)
+        
+        start = currentP;
+        while (currentP->next != NULL)
         {
-            if (current->x == val)
-            {
-                return 1;
+            // literujemy dopoki następna p nie wieksze będzie od obecnego q
+            if(currentP->next->x <= currentQ->x){
+                currentP = currentP->next;
+                continue;
             }
-            current = current->next;
-        }
-    }
-    return 0;
-}
-
-void removeDupicateUnsorted(el *head)
-{
-    if (head != NULL)
-    {
-        el *tmp = NULL;
-        el *current = head;
-        el *before = NULL;
-        while (current != NULL)
-        {
-            if (cotain(tmp, current->x))
+            first = currentQ;
+            next = currentP->next;
+            
+            
+            // literujemy do poki elementy q  sa mniejsze od nastepnego elementu p
+            while (currentQ->next != NULL && currentQ->next->x <= next->x)
             {
-                before->next = current->next;
-                free(current);
-                current = before->next;
+                currentQ = currentQ->next;
+            }
+            currentP->next = first;
+            currentP = currentQ;
+            // currentQ = currentQ->next;
+
+            
+            if (currentQ->next != NULL)
+            {
+                currentQ = currentQ->next;
+                currentP->next = next;
+                currentP = currentP->next;
             }
             else
             {
-                tmp = addBottom(tmp, current->x);
-                before = current;
-                current = current->next;
+                currentQ = currentQ->next;
+                currentP->next = next;
+                break;
             }
         }
+        if (currentQ != NULL)
+        {
+            currentP->next = currentQ;
+        }
+
+        *Q = NULL;
+        *P = start;
     }
 }
 
@@ -194,20 +168,17 @@ void printMenu()
     printf("0-wylacz \n");
     // printf("1-wypisz \n");
     printf("1-wypisz \n");
-    printf("2-dodaj element \n");
-    printf("3-usun powtorzenia \n");
+    printf("2-dodaj element do P\n");
+    printf("3-dodaj element do Q\n");
+    printf("4-polacz P i Q \n");
 }
 
 int main(int argc, char const *argv[])
 {
-    el *head = NULL;
-    int type;
     int dec = -1;
+    el *P = NULL;
+    el *Q = NULL;
     int help;
-    printf("wybierz tryp \n");
-    printf("0-talica posortowana \n");
-    printf("1-tablica nieposortowana \n");
-    scanf("%d", &type);
     while (dec != 0)
     {
         printMenu();
@@ -215,35 +186,34 @@ int main(int argc, char const *argv[])
         switch (dec)
         {
         case 0:
-            deleteEl(head);
+            deleteEl(P);
+            deleteEl(Q);
             break;
         case 1:
-            pritnEl(head);
+            printf("P\n");
+            pritnEl(P);
+            printf("Q\n");
+            pritnEl(Q);
             break;
+
         case 2:
             printf("podaj wartosc jaka chcesz dodac \n");
             scanf("%d", &help);
-            if (type == 0)
-            {
-                insert(&head, help, 1);
-            }
-            else
-            {
-                head = addBottom(head, help);
-            }
+            insert(&P, help, 1);
             break;
+
         case 3:
-            if (type == 0)
-            {
-                removeDupicateSorted(head);
-            }
-            else
-            {
-                removeDupicateUnsorted(head);
-            }
+            printf("podaj wartosc jaka chcesz dodac \n");
+            scanf("%d", &help);
+            insert(&Q, help, 1);
             break;
+
+        case 4:
+            marge(&P, &Q);
+            break;
+
         default:
-            printf("brak takiej opcji \n");
+            printf("brak takiej opcji");
             break;
         }
     }
