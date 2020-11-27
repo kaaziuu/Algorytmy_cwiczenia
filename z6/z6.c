@@ -113,26 +113,19 @@ void insertSentr(el **head, int value, int repeat, el *sentry)
         }
         else if (value > current->x)
         {
-            while (current->next != sentry)
+            el *before = NULL;
+            sentry->x = value;
+            while (current->x < value)
             {
-                printf("%d\n", current->x);
-
-                if ((current->x < value || (current->x <= value && repeat)) && (current->next == NULL || current->next->x > value))
-                {
-                    el *newEl = (el *)malloc(sizeof(el));
-                    newEl->x = value;
-                    newEl->next = current->next;
-                    current->next = newEl;
-                    break;
-                }
+                before = current;
                 current = current->next;
             }
-            if (current->next == sentry)
+            if (repeat || (!repeat && (current->x != value || current == sentry)))
             {
                 el *newEl = (el *)malloc(sizeof(el));
                 newEl->x = value;
-                newEl->next = current->next;
-                current->next = newEl;
+                newEl->next = current;
+                before->next = newEl;
             }
         }
     }
