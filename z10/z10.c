@@ -73,6 +73,8 @@ el *removeAll(el *P, el *before, int y)
     {
         if (P->x == y)
         {
+            before->next = NULL;
+            free(P);
             return NULL;
         }
         else
@@ -81,14 +83,20 @@ el *removeAll(el *P, el *before, int y)
         }
     }
     el *next = removeAll(P->next, P, y);
+    
     if (P->x == y && before != NULL)
     {
-        before->next = next;
+        if(next != NULL)
+            before->next = next;
+        else{
+            before->next = NULL;
+        }
         free(P);
         return next;
     }
     else if (P->x == y && before == NULL)
     {
+        free(P);
         return next;
     }
     return P;
@@ -249,9 +257,7 @@ void addBottom2(el **head, int y)
         *head = create(y);
     }
 }
-/**
- * 10.9 można rekurencja wyszukiwac konca bloku jakiego chcemy zrobić marge!!!!!!!!!!!
- */
+
 
 el *removeDuplicateUnsorted(el *head, el *elem)
 {
@@ -285,22 +291,23 @@ el *removeDuplicateUnsorted(el *head, el *elem)
 
 el *getEndBlock(el *current, int val)
 {
-    if(current->next==NULL || current->next->x > val)
+    if (current->next == NULL || current->next->x > val)
     {
 
         return current;
     }
-    else{
+    else
+    {
 
         return getEndBlock(current->next, val);
     }
 }
 
-void merge(el **P,el **Q)
+void merge(el **P, el **Q)
 {
     if (*P != NULL && *Q != NULL)
     {
-        // na current wynieram ta co zaczyna sie od mniejszej
+        // na current wybiera ta co zaczyna sie od mniejszej
         el *currentP = *P;
         el *currentQ = *Q;
         el *next = NULL;
@@ -312,11 +319,11 @@ void merge(el **P,el **Q)
             currentP = currentQ;
             currentQ = tmp;
         }
-        
+
         start = currentP;
         while (currentP->next != NULL)
         {
-            if(currentP->next->x <= currentQ->x)
+            if (currentP->next->x <= currentQ->x)
             {
                 currentP = currentP->next;
                 continue;
@@ -324,33 +331,29 @@ void merge(el **P,el **Q)
             first = currentQ;
             next = currentP->next;
             currentQ = getEndBlock(currentQ, next->x);
-            
-
             currentP->next = first;
             currentP = currentQ;
-            currentQ = currentQ->next;
-            if(currentQ->next != NULL)
+            if (currentQ->next != NULL)
             {
                 currentQ = currentQ->next;
                 currentP->next = next;
                 currentP = currentP->next;
-            }else{
+            }
+            else
+            {
                 currentQ = currentQ->next;
                 currentP->next = next;
                 break;
             }
 
         }
-        if(currentQ != NULL)
+        if (currentQ != NULL)
         {
             currentP->next = currentQ;
         }
         *Q = NULL;
         *P = start;
-        
-
     }
-
 }
 
 void printMenu()
@@ -364,140 +367,135 @@ void printMenu()
     printf("0-zakoncz \n");
 }
 
+void printMenu2()
+{
+    printf("1-dodaj element \n");
+    printf("2-wypisz \n");
+    printf("3-wypisz od tylu \n");
+    printf("4-usun o warotosci \n");
+    printf("5-usun duplikaty \n");
+    printf("6-mage HEAD z Q \n");
+    printf("0-zakoncz \n");
+}
+
+void unsorted()
+{
+    int dec = -1;
+    int help;
+    el *head = NULL;
+    while (dec != 0)
+    {
+        printMenu();
+        scanf("%d", &dec);
+
+        switch (dec)
+        {
+        case 0:
+            deleteEl(head);
+            break;
+        case 1:
+            printf("podaj wartosc \n");
+            scanf("%d", &help);
+            head = addBottom(head, help);
+            break;
+        case 2:
+            printf("___________________________\n");
+            printEl(head);
+            printf("___________________________\n");
+            break;
+        case 3:
+            head = printElReverse(head);
+            break;
+        case 4:
+            printf("podaj wartosc \n");
+            scanf("%d", &help);
+            head = removeAll(head, NULL, help);
+            break;
+        case 5:
+            revetrRecuretion(&head, head);
+            break;
+        case 6:
+            head = removeDuplicateUnsorted(head, head);
+            break;
+        default:
+            printf("brak takiej opcji \n");
+            break;
+        }
+    }
+
+}
+
+
+void sorted()
+{
+    el *head = NULL;
+    el *Q=NULL;
+    int PQ = 1;
+    int dec = -1;
+    int help;
+    int duplicateType;
+    printf("0-bez duplikatow \n 1-z duplikatami\n");
+    scanf("%d", &duplicateType);
+    while (dec != 0)
+    {
+        printMenu2();
+        scanf("%d", &dec);
+
+        switch (dec)
+        {
+        case 0:
+            deleteEl(head);
+            break;
+        case 1:
+            printf("podaj wartosc \n");
+            scanf("%d", &help);
+         
+            printf("0-HEAD\n 1-Q\n");
+            scanf("%d", &PQ);
+            if(!PQ)
+                head = insert(head, NULL, help, duplicateType);
+            else
+                Q=insert(Q, NULL, help, duplicateType);
+            break;
+        case 2:
+            printf("HEAD\n");
+            printEl(head);
+            printf("Q\n");
+            printEl(Q);
+            break;
+        case 3:
+            head = printElReverse(head);
+            break;
+        case 4:
+            printf("podaj wartosc \n");
+            scanf("%d", &help);
+            head = removeAll(head, NULL, help);
+            break;
+        case 5:
+            head = removeDuplicateSorted(head);
+            break;
+        case 6:
+            merge(&head, &Q);
+            break;
+        default:
+            printf("brak takiej opcji \n");
+            break;
+        }
+    }
+}
 int main(int argc, char const *argv[])
 {
-    // int sortedType;
-    // int duplicateType;
-    // int dec = -1;
-    // int help;
-    // el *head = NULL;
-    // el *used = NULL;
-    // printf("1-posortowana \n 0-nieposortowana ");
-    // scanf("%d", &sortedType);
-    // if (sortedType)
-    // {
-    //     printf("0-bez duplikatow \n 1-z duplikatami");
-    //     scanf("%d", &duplicateType);
-    // }
-    // while (dec != 0)
-    // {
-    //     printMenu();
-    //     scanf("%d", &dec);
+    int sortedType;
 
-    //     switch (dec)
-    //     {
-    //         case 0:
-    //             deleteEl(head);
-    //             deleteEl(used);
-    //             break;
-    //         case 1:
-    //             printf("podaj wartosc \n");
-    //             scanf("%d", &help);
-    //             if(sortedType)
-    //             {
-    //                 head = insert(head, help, duplicateType);
-    //             }else{
-    //                 head = addBottom(head, help);
-    //             }
-    //             break;
-    //         case 2:
-    //             printEl(head);
-    //             break;
-    //         case 3:
-    //             head = printElReverse(head);
-    //             break;
-    //         case 4:
-    //             printf("podaj wartosc \n");
-    //             scanf("%d", &help);
-    //             removeAll(head, help);
-    //             break;
-    //         case 5:
-    //             reverse(&head, head);
-    //             break;
-    //         case 6:
-    //             if(sortedType){
-    //                 head = removeDuplicateSorted(head);
-    //             }else{
-    //                 head = removeDuplicateUnsorted(head, used);
-    //                 deleteEl(used);
-    //             }
-    //             break;
-    //         default:
-    //             printf("brak takiej opcji \n");
-    //             break;
-    //     }
-    // // }
-    // el *head = NULL;
-    // el *tmp = NULL;
-    // head = addBottom(head, 1);
-    // head = addBottom(head, 2);
-    // head = addBottom(head, 3);
-    // head = addBottom(head, 3);
-    // head = addBottom(head, 4);
-    // head = addBottom(head, 5);
-    // head = addBottom(head, 6);
-    // head = addBottom(head, 7);
-    // head = addBottom(head, 8);
-    // head = addBottom(head, 3);
-    // head = addBottom(head, 3);
-    // head = addBottom(head, 3);
-    // printf("___________\n");
+    printf("1-posortowana \n 0-nieposortowana ");
+    scanf("%d", &sortedType);
+    if(sortedType)
+    {
+        sorted();
+    }
+    else{
+        unsorted();
+    }
 
-    // printEl(head);
-    // printf("___________\n");
-    // head = removeAll(head, NULL, 3);
-    // printf("___________\n");
-    // printEl(head);
-    // tmp = revetrRecuretion(&head, head);
-    // printf("___________\n");
-    // printEl(head);
-
-    // head = insert(head, NULL, 1, 1);
-    // head = insert(head, NULL, 3, 1);
-    // head = insert(head, NULL, 2, 1);
-    // head = insert(head, NULL, 5, 1);
-    // head = insert(head, NULL, 5, 1);
-    // head = insert(head, NULL, 4, 1);
-    // head = insert(head, NULL, -1, 1);
-    // head = insert(head, NULL, -1, 1);
-    // head = insert(head, NULL, -1, 1);
-    // head = insert(head, NULL, -1, 1);
-    // head = insert(head, NULL, -1, 1);
-    // head = removeDuplicateSorted(head);
-    // printEl(head);
-    // printf("_____________________\n");
-    // head = removeDuplicateUnsorted(head, head);
-    // // printEl(tmp);
-    // printEl(head);
-    // deleteEl(head);
-    // deleteEl(tmp);
-
-    el *P = NULL;
-    el *Q = NULL;
-    P=insert(P, NULL, 1, 1);
-    P=insert(P, NULL, 3, 1);
-    P=insert(P, NULL, 3, 1);
-    P=insert(P, NULL, 5, 1);
-    P=insert(P, NULL, 7, 1);
-    P=insert(P, NULL, 9, 1);
-    P=insert(P, NULL, 9, 1);
-    Q=insert(Q, NULL, 2, 1);
-    Q=insert(Q, NULL, 4, 1);
-    Q=insert(Q, NULL, 6, 1);
-    Q=insert(Q, NULL, 8, 1);
-    Q=insert(Q, NULL, 8, 1);
-    Q=insert(Q, NULL, 10, 1);
-    Q=insert(Q, NULL, 10, 1);
-
-    printEl(P);
-    printf("___________\n");
-    printEl(Q);
-    printf("___________\n");
-    merge(&P, &Q);
-    printEl(P);
-    printf("___________\n");
-    printEl(Q);
-    printf("___________\n");
-    
     return 0;
 }
